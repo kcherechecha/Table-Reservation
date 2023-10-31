@@ -1,0 +1,43 @@
+﻿@model WebRestik.Models.Reservation
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Reservation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BookingTime" class="control-label"></label>
+                <input asp-for="BookingTime" class="form-control" />
+                <span asp-validation-for="BookingTime" class="text-danger"></span>
+            </div>
+            <input type="hidden" value="@ViewBag.TableId" name="TableId" />
+            <div class="form-group">
+                <label asp-for="ClientName" class="control-label"></label>
+                <input asp-for="ClientName" class="form-control" />
+                <span asp-validation-for="ClientName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WaiterId" class="control-label"></label>
+                <select asp-for="WaiterId" class ="form-control" asp-items="ViewBag.WaiterId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

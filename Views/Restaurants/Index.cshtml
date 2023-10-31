@@ -1,0 +1,109 @@
+﻿@model IEnumerable<WebRestik.Models.Restaurant>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Restaurants</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+
+<div id="map" style="height: 400px;"></div>
+
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {
+                lat: 38.91696360320006, lng: - 77.03813058653358
+        },
+            zoom: 13 
+        });
+
+        $.ajax({
+            url: 'api/api/getRestaurants',
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                data.forEach(function (object) {
+                    var marker = new google.maps.Marker({
+                        position: { lat: object.latitude, lng: object.longtitude },
+                        map: map,
+                        title: object.name 
+                    });
+                });
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    async function loadMapScript() {
+        const apiKey = 'AIzaSyDX9nE0FRzcl3IW-vsol81HvztUhw_vhj0';
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+        script.defer = true;
+        script.async = true;
+        document.body.appendChild(script);
+    }
+
+    loadMapScript();
+</script>
+
+<div class="container">
+    <div id="chart2"></div>
+</div>
+@section scripts
+    {
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            $.get('api/Chart/JsonDataRestaurant', function (JsonDataRestaurant) {
+                data = google.visualization.arrayToDataTable(JsonDataRestaurant, false);
+                var option = {
+                    title: "Співідношення кількості столів у ресторанах",
+                    width: 400,
+                    height: 200
+                };
+                chart = new google.visualization.BarChart(document.getElementById('chart2'));
+                chart.draw(data, option);
+            })
+        }
+    </script>
+    }
